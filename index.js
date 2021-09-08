@@ -2,8 +2,26 @@ function ship (length){
     return {
         length: length,
         type: typeDescriptor(length),
-        status: statusQuo(length)
-        
+        status: statusQuo(length),
+        hit(index){
+          if(index >= this.length){
+              throw Error; 
+          } else {
+            this.status[index] = 'Hit';  
+          }
+        },
+        isSunk(){
+            let sunk = true;
+            this.status.forEach(e =>  {
+                if(e.valueOf() == 'Not hit'){
+                    sunk = false;
+                }
+            })
+            return sunk;
+        },
+        getLength(){
+            return this.length
+        },
     }
 }
 function typeDescriptor(length){
@@ -29,10 +47,27 @@ function statusQuo(length){
     return statusArray;
 }
 
+function placement(col, row, ship){
+
+    if((col.length + row.length) !== ship.length+1){
+        return 'invalid';  
+    }
+}
+
+function gameBoard(){
+    let board = new Array(10)
+    for(let i =0; i<board.length;i++){
+        board[i] = new Array(10)
+    }
+    return {
+        givenBoard: board,
+    }
+}
 
 
-console.log(ship(5));
 
 
 
-module.exports = ship;
+
+export{placement, ship, gameBoard}
+
