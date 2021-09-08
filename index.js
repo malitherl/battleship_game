@@ -7,7 +7,8 @@ function ship (length){
           if(index >= this.length){
               throw Error; 
           } else {
-            this.status[index] = 'Hit';  
+            this.status[index] = 'Hit'; 
+            return this.status[index];
           }
         },
         isSunk(){
@@ -57,10 +58,47 @@ function placement(col, row, ship){
 function gameBoard(){
     let board = new Array(10)
     for(let i =0; i<board.length;i++){
-        board[i] = new Array(10)
+        board[i] = new Array(10);
+        board[i].fill(0, 0)
     }
-    return {
+    let misses =[];
+    return { 
         givenBoard: board,
+        missed: misses,
+        place(ship) {    
+            let coordinatesNeeded = ship.length;
+            let x =0;
+            let y= 0;
+            while(coordinatesNeeded >0){     
+                this.givenBoard[x][y]= ship.type;
+                coordinatesNeeded--; 
+                y++;
+            }
+            board= this.givenBoard;
+            return this.givenBoard;
+        },
+        receiveAttack(x,y, ship0){
+            if (this.givenBoard[x][y] !== 0){
+                this.givenBoard[x][y] = ship0.hit(x);
+                return ship0.hit(x);
+            } else {
+                misses.push("(" + x + ", " + y + ")");
+                return misses;
+            }           
+        },
+        allShipsSunk(){
+            let shipsSunk = true;
+            for(let i= 0; i< 10; i++){
+                for(let j=0; j< 10; j++){
+                    if(this.givenBoard[i][j] !== 0 && this.givenBoard[i][j] !== 'Hit'){
+                        shipsSunk= false;
+                    }
+                }
+            }
+            return shipsSunk;
+        }
+
+
     }
 }
 
