@@ -1,3 +1,7 @@
+import {displayGameBoards} from './DOM';
+
+import _ from 'lodash';
+
 function ship (length){
     return {
         length: length,
@@ -65,9 +69,8 @@ function gameBoard(){
     return { 
         givenBoard: board,
         missed: misses,
-        place(ship) {    
+        place(ship, x) {    
             let coordinatesNeeded = ship.length;
-            let x =0;
             let y= 0;
             while(coordinatesNeeded >0){     
                 this.givenBoard[x][y]= ship.type;
@@ -77,7 +80,8 @@ function gameBoard(){
             board= this.givenBoard;
             return this.givenBoard;
         },
-        receiveAttack(x,y, ship0){
+        //we need to fix this method
+        receiveAttack(x,y){
             if (this.givenBoard[x][y] !== 0){
                 this.givenBoard[x][y] = ship0.hit(x);
                 return ship0.hit(x);
@@ -102,10 +106,84 @@ function gameBoard(){
     }
 }
 
+function player(enemyGameBoard, a){
+    let ships= [];
+    let attacks= [];
+    let computer;
+    for(let i=2; i< 6; i++){
+        ships.push(ship(i));
+    }
+    if(a == 0){
+        computer =true;
+    } else {
+        computer =false;
+    }
+//need to add a function here to have the player place their ships 
+    return{
+        armada: ships,
+        attack: attacks,
+        makeAttack(a,b) {
+            let x;
+            let y;
+            if(computer== true){
+               x = Math.floor(Math.random() * 10 +1);
+               y = Math.floor(Math.random() * 10 +1);
+                if(enemyGameBoard.givenBoard[x][y] !== 0){
+                    this.makeAttack(0,0);
+                } else {
+                    this.attack.forEach(elem => {
+                        if(elem === [x,y]){
+                            this.makeAttack(0,0);
+                        }
+                    })
+                }
+            } else {
+                y=b
+                x=a;
+            } 
+            attacks.push([x,y]);
+            return x,y;
+        },
+    }
+}
 
 
+//2.  For now just populate each Gameboard with predetermined coordinates. 
+function gameLoop(){
+    let playerGameBoard = gameBoard();
+    let computerGameBoard = gameBoard();
+    let player1= player(computerGameBoard, 1);
+    let cpu = player(playerGameBoard, 0); 
+    let x =0;
+    player1.armada.forEach(e => {
+        playerGameBoard.place(e, x)
+        computerGameBoard.place(e,x);
+        x++;
+    })
+ 
+        
+ 
+    
+
+     while((playerGameBoard.allShipsSunk() || computerGameBoard.allShipsSunk()) !== true){
+        displayGameBoards(playerGameBoard.givenBoard, computerGameBoard.givenBoard)
+        let turn =0;
+            if(turn == 0){
+                player1.makeAttack(0,0);
+                computerGameBoard.receiveAttack(0,0);
+                turn++;
+            } else {
+                cpu.makeAttack(0,0);
+                player1.receiveAttack(x,y);
+                turn--;
+            } 
+    } 
 
 
+}
+//how we enter coordinates to place a ship will differ 
+gameLoop();
 
-export{placement, ship, gameBoard}
+
+export{placement, ship, gameBoard, player, gameLoop}
 

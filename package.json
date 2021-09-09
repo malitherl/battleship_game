@@ -1,9 +1,30 @@
 {
-    "scripts": {
-        "test": "jest"
-    },
-    "devDependencies": {
-        "@babel/preset-env": "^7.15.4",
-        "jest": "^27.1.0"
-    }
+  "scripts": {
+    "test": "jest",
+     "build": "webpack"
+  },
+  "devDependencies": {
+    "@babel/preset-env": "^7.15.4",
+    "jest": "^27.1.0",
+    "webpack": "^5.52.0",
+    "webpack-cli": "^4.8.0"
+  },
+  "name": "battleship_game",
+  "description": "Using Test Driven Development, we will recreate the classical game Battleship",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "lodash": "^4.17.21"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/malitherl/battleship_game.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/malitherl/battleship_game/issues"
+  },
+  "homepage": "https://github.com/malitherl/battleship_game#readme"
 }

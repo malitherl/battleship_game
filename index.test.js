@@ -1,4 +1,4 @@
-import {ship, placement, gameBoard} from './index';
+import {ship, placement, gameBoard, player} from './src/index';
 
 test('Coordinates are too big for ship', () => {
     let x = ship(5);
@@ -60,5 +60,18 @@ test('All ships have been sunk', ()=>{
     game3.receiveAttack(0,0, ship3);
     game3.receiveAttack(0,1, ship3);
     expect(game3.allShipsSunk()).toEqual(true);
+})
+
+test('A computer has made a legal move', ()=> {
+    let enemyBoard = gameBoard();
+    let cpu = player(enemyBoard, 0);
+    expect(cpu.makeAttack()).toBeLessThan(11);
+})
+
+test('An attack was recorded', ()=>{
+    let enemyBoard = gameBoard();
+    let cpu = player(enemyBoard, 1);
+    cpu.makeAttack(0,0);
+    expect(cpu.attack).toEqual([[0,0]]);
 })
 
