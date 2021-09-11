@@ -1,6 +1,7 @@
 import {displayGameBoards} from './DOM';
 
-import _ from 'lodash';
+import _, { indexOf } from 'lodash';
+
 
 function ship (length){
     return {
@@ -53,7 +54,6 @@ function statusQuo(length){
 }
 
 function placement(col, row, ship){
-
     if((col.length + row.length) !== ship.length+1){
         return 'invalid';  
     }
@@ -63,30 +63,47 @@ function gameBoard(){
     let board = new Array(10)
     for(let i =0; i<board.length;i++){
         board[i] = new Array(10);
-        board[i].fill(0, 0)
+        board[i].fill([]);
     }
+    let ships = new Map();
+    let coords = new Map();
     let misses =[];
     return { 
         givenBoard: board,
         missed: misses,
+        
         place(ship, x) {    
             let coordinatesNeeded = ship.length;
             let y= 0;
+            let coords =[];
             while(coordinatesNeeded >0){     
-                this.givenBoard[x][y]= ship.type;
+                let data= [ship.type, ship.status[coordinatesNeeded-1]];
+                this.givenBoard[x][y] = data;
+                let c = [x,y];
+                coords.push(c)
                 coordinatesNeeded--; 
+                
+                console.log(this.givenBoard[x][y])
                 y++;
             }
+            ships.set(ship, coords);
             board= this.givenBoard;
             return this.givenBoard;
         },
-        //we need to fix this method
+   
         receiveAttack(x,y){
+            let array = [x,y];
             if (this.givenBoard[x][y] !== 0){
-                this.givenBoard[x][y] = ship0.hit(x);
-                return ship0.hit(x);
+                ships.forEach(function(value, key){
+                    value.forEach(elem => {
+                       if(elem.toString() === array.toString()){
+                            console.log(value.indexOf(elem))
+                            key.hit( value.indexOf(elem))
+                       }
+                    })
+                })
             } else {
-                misses.push("(" + x + ", " + y + ")");
+                misses.push(array);
                 return misses;
             }           
         },
@@ -161,29 +178,23 @@ function gameLoop(){
         x++;
     })
  
-        
- 
-    
-
-     while((playerGameBoard.allShipsSunk() || computerGameBoard.allShipsSunk()) !== true){
-        displayGameBoards(playerGameBoard.givenBoard, computerGameBoard.givenBoard)
-        let turn =0;
+       
+     displayGameBoards(playerGameBoard.givenBoard, computerGameBoard.givenBoard)
+       let turn =0;
             if(turn == 0){
                 player1.makeAttack(0,0);
                 computerGameBoard.receiveAttack(0,0);
+                displayGameBoards(playerGameBoard.givenBoard, computerGameBoard.givenBoard)
                 turn++;
             } else {
                 cpu.makeAttack(0,0);
                 player1.receiveAttack(x,y);
                 turn--;
             } 
-    } 
-
+    
+            displayGameBoards(playerGameBoard.givenBoard, computerGameBoard.givenBoard)
 
 }
-//how we enter coordinates to place a ship will differ 
-gameLoop();
-
 
 export{placement, ship, gameBoard, player, gameLoop}
 

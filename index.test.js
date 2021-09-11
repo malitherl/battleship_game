@@ -1,5 +1,5 @@
 import {ship, placement, gameBoard, player} from './src/index';
-
+/* 
 test('Coordinates are too big for ship', () => {
     let x = ship(5);
     expect(placement([1, 10], ['B','C','D','E','F'], x)).toEqual('invalid');
@@ -73,5 +73,21 @@ test('An attack was recorded', ()=>{
     let cpu = player(enemyBoard, 1);
     cpu.makeAttack(0,0);
     expect(cpu.attack).toEqual([[0,0]]);
-})
+}) */
 
+test('Gameboard displays correct information', ()=>{
+    let game = gameBoard();
+    let a = ship(2)
+    expect(game.place(a,0)).toStrictEqual([
+        [["Destroyer", "Not hit"], ["Destroyer", "Not hit"], [], [], [], [], [], [], [], []], 
+        [[], [], [], [], [], [], [], [], [], []], 
+        [[], [], [], [], [], [], [], [], [], []], 
+        [[], [], [], [], [], [], [], [], [], []], 
+        [[], [], [], [], [], [], [], [], [], []], 
+        [[], [], [], [], [], [], [], [], [], []], 
+        [[], [], [], [], [], [], [], [], [], []], 
+        [[], [], [], [], [], [], [], [], [], []], 
+        [[], [], [], [], [], [], [], [], [], []], 
+        [[], [], [], [], [], [], [], [], [], []]
+    ])
+})
