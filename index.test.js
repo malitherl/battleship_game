@@ -109,3 +109,7 @@ test('Game takes a hit when an attack is made', ()=>{
         [[], [], [], [], [], [], [], [], [], []]
     ])
 })
+
+test('Computer makes an attack', ()=>{
+    
+})

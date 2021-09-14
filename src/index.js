@@ -135,7 +135,8 @@ function player(enemyGameBoard, a){
 //need to add a function here to have the player place their ships 
     return{
         enemy: enemyGameBoard,
-        armada: ships,
+        armada: ships, //i can modify this so that the ships are placed automatically 
+        //instead of having to do it down in the game loop
         attack: attacks,
         makeAttack(a,b) {
             let x;
@@ -153,7 +154,6 @@ function player(enemyGameBoard, a){
                     })
                 }
             } else {
-               console.log(this.enemy)
                this.enemy.receiveAttack(a,b)
             } 
             attacks.push([x,y]);
@@ -162,47 +162,119 @@ function player(enemyGameBoard, a){
     }
 }
 
-//2.  For now just populate each Gameboard with predetermined coordinates. 
-function gameLoop(){
+function gameLogic(){
     let playerGameBoard = gameBoard();
     let computerGameBoard = gameBoard();
     let player1= player(computerGameBoard, 1);
     let cpu = player(playerGameBoard, 0); 
+    let players= [player1, cpu]
     let x =0;
-    player1.armada.forEach(e => {
+    let isGameOver= false;
+    let determinant =0;
+    player1.armada.forEach(e => { //this needs to go 
         playerGameBoard.place(e, x)
         computerGameBoard.place(e,x);
         x++;
     })
     
-  
-           
-
-
-  displayGameBoards(playerGameBoard.givenBoard, computerGameBoard.givenBoard);
-    //this part is only for the player's turn. the computer doesn't need to use event listeners to interact
-    function strike(player, x, y, e){
-        player.makeAttack(x,y);
-        console.log(x)
-        console.log(y)
-        e.value = player.enemy.givenBoard[x][y];
-        update(e);
+  displayGameBoards(playerGameBoard.givenBoard, computerGameBoard.givenBoard); 
+  function turn(place){
+             
+    //determines who's turn it is 
+    let currentPlayer; 
+    if(determinant ==0){
+        currentPlayer = players[0];
+        place++;
+    } 
+    else if (determinant == 1){
+        currentPlayer = players[1];
+        place--;
     }
+    determinant = place;
 
-    Array.from(document.getElementsByClassName('cell')).forEach(element =>{
-        element.addEventListener("click", 
-         function() {
-            strike(player1, element.dataset.x, element.dataset.y, element);
-          
-        }) //we can use this command to strip the elements of its event listeners and proceed on
-        element.outerHTML = element.outerHTML; 
-    })
-    
+    return currentPlayer;
 
 }
 
-gameLoop();
+    //this part is only for the player's turn. the computer doesn't need to use event listeners to interact
+    function strike(player, x, y, e){
+        player.makeAttack(x,y);
+        e.value = player.enemy.givenBoard[x][y];
+        update(e);
+        console.log(player.enemy.allShipsSunk())
+        return player.enemy.allShipsSunk();
+    }
+
+   while(isGameOver == false){
+        if(determinant ==0){
+            Array.from(document.getElementsByClassName('cell')).forEach(element =>{
+                element.addEventListener("click", 
+                 function() {
+                    if(strike(player1, element.dataset.x, element.dataset.y, element) == false){
+                        Array.from(document.getElementsByClassName('cell')).forEach(element =>{
+                            element.outerHTML = element.outerHTML; 
+                        })
+                        determinant++;
+                        continue;
+                    } else {
+                        console.log('the game is over')
+                        isGameOver= true;
+                        
+                    }
+                    
+                    
+                }) 
+            })
+        } else {
+            cpu.makeAttack(0,0);
+            //i think i may need to modify the makeattack method somewhat
+            determinant--;
+            continue;
+        }
+        // i think we could do this with recursion instead
+   
+    
+   } 
+    
+  
+
+}
+
+gameLogic();
+
+// Array.from(document.getElementsByClassName('cell')).forEach(element =>{
+//     element.addEventListener("click", 
+//      function() {
+//         strike(currentPlayer, element.dataset.x, element.dataset.y, element);
+//         Array.from(document.getElementsByClassName('cell')).forEach(element =>{
+//             element.outerHTML = element.outerHTML; 
+//         })      
+//     }) 
+// })
+
+export{placement, ship, gameBoard, player}
+
+/* 
+*
+
+here's our pseudocode
+
+gameLoop(parameter1, parameter2,..., parameterx){
+
+    if(player turn){
+        eventlisteners added 
+    } else {
+        the computer makes a random but legal move 
+    }
+    we check the game condition to see if its done
 
 
-export{placement, ship, gameBoard, player, gameLoop}
 
+
+    gameLoop(same paramaters)
+}
+
+
+
+
+*/
