@@ -1,13 +1,14 @@
-import {displayGameBoards} from './DOM';
 
-import _, { indexOf } from 'lodash';
-
+import {displayGameBoards, update} from './DOM';
 
 function ship (length){
+
+    let statusArray = statusQuo(length);
+
     return {
         length: length,
         type: typeDescriptor(length),
-        status: statusQuo(length),
+        status: statusArray,
         hit(index){
           if(index >= this.length){
               throw Error; 
@@ -66,28 +67,25 @@ function gameBoard(){
         board[i].fill([]);
     }
     let ships = new Map();
-    let coords = new Map();
     let misses =[];
     return { 
         givenBoard: board,
         missed: misses,
-        
         place(ship, x) {    
             let coordinatesNeeded = ship.length;
             let y= 0;
             let coords =[];
             while(coordinatesNeeded >0){     
-                let data= [ship.type, ship.status[coordinatesNeeded-1]];
+                let data= [ship.type, ship.status[coordinatesNeeded-1], ship.length-coordinatesNeeded];
                 this.givenBoard[x][y] = data;
                 let c = [x,y];
                 coords.push(c)
                 coordinatesNeeded--; 
-                
-                console.log(this.givenBoard[x][y])
                 y++;
             }
             ships.set(ship, coords);
             board= this.givenBoard;
+            console.log(ships)
             return this.givenBoard;
         },
    
@@ -97,29 +95,28 @@ function gameBoard(){
                 ships.forEach(function(value, key){
                     value.forEach(elem => {
                        if(elem.toString() === array.toString()){
-                            console.log(value.indexOf(elem))
-                            key.hit( value.indexOf(elem))
+                             key.hit(value.indexOf(elem));
+                             let data = [key.type, key.status[value.indexOf(elem)]];
+                             array= data; 
                        }
                     })
                 })
             } else {
                 misses.push(array);
                 return misses;
-            }           
+            }
+            this.givenBoard[x][y] = array;
+            return this.givenBoard;
         },
         allShipsSunk(){
             let shipsSunk = true;
-            for(let i= 0; i< 10; i++){
-                for(let j=0; j< 10; j++){
-                    if(this.givenBoard[i][j] !== 0 && this.givenBoard[i][j] !== 'Hit'){
-                        shipsSunk= false;
+                ships.forEach(function(value, key){
+                    if(key.isSunk() == false){
+                        shipsSunk = false;
                     }
-                }
-            }
+                })
             return shipsSunk;
         }
-
-
     }
 }
 
@@ -137,6 +134,7 @@ function player(enemyGameBoard, a){
     }
 //need to add a function here to have the player place their ships 
     return{
+        enemy: enemyGameBoard,
         armada: ships,
         attack: attacks,
         makeAttack(a,b) {
@@ -155,15 +153,14 @@ function player(enemyGameBoard, a){
                     })
                 }
             } else {
-                y=b
-                x=a;
+               console.log(this.enemy)
+               this.enemy.receiveAttack(a,b)
             } 
             attacks.push([x,y]);
             return x,y;
         },
     }
 }
-
 
 //2.  For now just populate each Gameboard with predetermined coordinates. 
 function gameLoop(){
@@ -177,24 +174,35 @@ function gameLoop(){
         computerGameBoard.place(e,x);
         x++;
     })
- 
-       
-     displayGameBoards(playerGameBoard.givenBoard, computerGameBoard.givenBoard)
-       let turn =0;
-            if(turn == 0){
-                player1.makeAttack(0,0);
-                computerGameBoard.receiveAttack(0,0);
-                displayGameBoards(playerGameBoard.givenBoard, computerGameBoard.givenBoard)
-                turn++;
-            } else {
-                cpu.makeAttack(0,0);
-                player1.receiveAttack(x,y);
-                turn--;
-            } 
     
-            displayGameBoards(playerGameBoard.givenBoard, computerGameBoard.givenBoard)
+  
+           
+
+
+  displayGameBoards(playerGameBoard.givenBoard, computerGameBoard.givenBoard);
+    //this part is only for the player's turn. the computer doesn't need to use event listeners to interact
+    function strike(player, x, y, e){
+        player.makeAttack(x,y);
+        console.log(x)
+        console.log(y)
+        e.value = player.enemy.givenBoard[x][y];
+        update(e);
+    }
+
+    Array.from(document.getElementsByClassName('cell')).forEach(element =>{
+        element.addEventListener("click", 
+         function() {
+            strike(player1, element.dataset.x, element.dataset.y, element);
+          
+        }) //we can use this command to strip the elements of its event listeners and proceed on
+        element.outerHTML = element.outerHTML; 
+    })
+    
 
 }
+
+gameLoop();
+
 
 export{placement, ship, gameBoard, player, gameLoop}
 
