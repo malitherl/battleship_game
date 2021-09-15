@@ -176,12 +176,11 @@ function gameLogic(){
    function gameLoop(determinant){
        console.log(determinant)
         if(determinant ==0){
-            Array.from(document.getElementsByClassName('cell')).forEach(element =>{
+            Array.from(document.getElementById('computer').childNodes).forEach(element =>{
                 element.addEventListener("click", 
                 
                 function() {
-                    console.log(element);
-                    if(strike(player1, element.dataset.x, element.dataset.y, element) == false){
+                    console.log(element);  if(strike(player1, element.dataset.x, element.dataset.y, element) == false){
                         Array.from(document.getElementsByClassName('cell')).forEach(element =>{
                             element.outerHTML = element.outerHTML; 
     
@@ -196,15 +195,15 @@ function gameLogic(){
         } else {
             let a = Math.floor(Math.random() * 10 +1);
             let b = Math.floor(Math.random() * 10 +1);
-            let board = document.getElementById('player');
-            console.log(`${a} ${b}`)
-            Array.from(document.getElementsByClassName('cell')).forEach(element => {
-                if(element.dataset.x == a && element.dataset.y == b 
-                        && element.parentElement.id == 'player'){
-                    update(element)
+            Array.from(document.getElementById('player').childNodes).forEach(element => {
+                if(element.dataset.x == a && element.dataset.y == b){
+                    cpu.makeAttack(a,b);
+                    element.value = cpu.enemy.givenBoard[a][b];
+                    setTimeout(function() {update(element)}, 1000);
+                   
                 }
             })
-            cpu.makeAttack(a,b);
+           
             determinant--;
             gameLoop(determinant)
         } 
@@ -215,15 +214,6 @@ function gameLogic(){
 
 gameLogic();
 
-// Array.from(document.getElementsByClassName('cell')).forEach(element =>{
-//     element.addEventListener("click", 
-//      function() {
-//         strike(currentPlayer, element.dataset.x, element.dataset.y, element);
-//         Array.from(document.getElementsByClassName('cell')).forEach(element =>{
-//             element.outerHTML = element.outerHTML; 
-//         })      
-//     }) 
-// })
 
 export{placement, ship, gameBoard, player}
 
@@ -248,6 +238,21 @@ gameLoop(parameter1, parameter2,..., parameterx){
 }
 
 
-
+Array.from(document.getElementsByClassName('cell')).forEach(element =>{
+                element.addEventListener("click", 
+                
+                function() {
+                    console.log(element);  if(strike(player1, element.dataset.x, element.dataset.y, element) == false){
+                        Array.from(document.getElementsByClassName('cell')).forEach(element =>{
+                            element.outerHTML = element.outerHTML; 
+    
+                        })
+                        gameLoop(determinant);
+                    } else {
+                        alert('Congratulations! You won the game!')
+                    }
+                }) 
+            })
+            determinant++;
 
 */

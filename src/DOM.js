@@ -18,6 +18,8 @@ function displayGameBoards(playerBoard, computerBoard){
     computerSection.style.display= "grid";
     computerSection.style.gridTemplateColumns= "auto auto auto auto auto auto auto auto auto auto "
 
+    content.appendChild(computerSection);
+    content.appendChild(playerSection);
 
 
     function boardCreator(node, board){
@@ -27,7 +29,7 @@ function displayGameBoards(playerBoard, computerBoard){
                 cell.setAttribute("class", "cell");
                 cell.style.width = "50px";
                 cell.style.height = "50px";
-                sortingCells(board[a][b], cell)
+                sortingCells(board[a][b], cell, board)
                 cell.style.border = "solid 1px grey";
                 cell.value = board[a][b];
                 cell.dataset.x= a;
@@ -40,29 +42,41 @@ function displayGameBoards(playerBoard, computerBoard){
     boardCreator(playerSection, playerBoard)
     boardCreator(computerSection, computerBoard)
 
-    content.appendChild(computerSection);
-    content.appendChild(playerSection);
 
 
 
-function sortingCells(array, cell){
+function sortingCells(array, cell, board){
+    if(board === playerBoard) {
+        if(array[1] === 'Hit'){
+            //we could replace this with a png overlaid the top so that it looks like a real hit 
+            cell.style.backgroundColor = 'black';
+            let img= document.createElement('img');
+            img.style.height='50px';
+            img.style.width ='50px';
+            img.src= 'https://www.pngpix.com/wp-content/uploads/2016/11/PNGPIX-COM-Explosion-PNG-Image.png';
+            cell.appendChild(img);
+        } else {    
+            if(array[0] !== undefined){
+                cell.style.backgroundColor =  'black';
+            } else {
+                cell.style.backgroundColor =  '#003366';
+            }
+        }
+    } else {
+        if(array[1] === 'Hit'){
+            //we could replace this with a png overlaid the top so that it looks like a real hit 
+            cell.style.backgroundColor = 'black';
+            let img= document.createElement('img');
+            img.style.height='50px';
+            img.style.width ='50px';
+            img.src= 'https://www.pngpix.com/wp-content/uploads/2016/11/PNGPIX-COM-Explosion-PNG-Image.png';
+            cell.appendChild(img);
     
-    if(array[1] === 'Hit'){
-        //we could replace this with a png overlaid the top so that it looks like a real hit 
-        cell.style.backgroundColor = 'black';
-        let img= document.createElement('img');
-        img.style.height='50px';
-        img.style.width ='50px';
-        img.src= 'https://www.pngpix.com/wp-content/uploads/2016/11/PNGPIX-COM-Explosion-PNG-Image.png';
-        cell.appendChild(img);
-
-    } else {    
-        if(array[0] !== undefined){
-            cell.style.backgroundColor =  'black';
-        } else {
-            cell.style.backgroundColor =  '#003366';
+        } else {    
+            cell.style.backgroundColor =  '#003366';    
         }
     }
+    
 }
 }
 
