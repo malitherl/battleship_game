@@ -139,25 +139,10 @@ function player(enemyGameBoard, a){
         //instead of having to do it down in the game loop
         attack: attacks,
         makeAttack(a,b) {
-            let x;
-            let y;
-            if(computer== true){
-               x = Math.floor(Math.random() * 10 +1);
-               y = Math.floor(Math.random() * 10 +1);
-                if(enemyGameBoard.givenBoard[x][y] !== 0){
-                    this.makeAttack(0,0);
-                } else {
-                    this.attack.forEach(elem => {
-                        if(elem === [x,y]){
-                            this.makeAttack(0,0);
-                        }
-                    })
-                }
-            } else {
-               this.enemy.receiveAttack(a,b)
-            } 
-            attacks.push([x,y]);
-            return x,y;
+  
+            this.enemy.receiveAttack(a,b)
+            attacks.push([a,b]);
+            return a,b;
         },
     }
 }
@@ -167,7 +152,7 @@ function gameLogic(){
     let computerGameBoard = gameBoard();
     let player1= player(computerGameBoard, 1);
     let cpu = player(playerGameBoard, 0); 
-    let players= [player1, cpu]
+    let players= [player1, cpu] //this can also go
     let x =0;
     let isGameOver= false;
     let determinant =0;
@@ -178,23 +163,6 @@ function gameLogic(){
     })
     
   displayGameBoards(playerGameBoard.givenBoard, computerGameBoard.givenBoard); 
-  function turn(place){
-             
-    //determines who's turn it is 
-    let currentPlayer; 
-    if(determinant ==0){
-        currentPlayer = players[0];
-        place++;
-    } 
-    else if (determinant == 1){
-        currentPlayer = players[1];
-        place--;
-    }
-    determinant = place;
-
-    return currentPlayer;
-
-}
 
     //this part is only for the player's turn. the computer doesn't need to use event listeners to interact
     function strike(player, x, y, e){
@@ -204,40 +172,45 @@ function gameLogic(){
         console.log(player.enemy.allShipsSunk())
         return player.enemy.allShipsSunk();
     }
-
-   while(isGameOver == false){
+   
+   function gameLoop(determinant){
+       console.log(determinant)
         if(determinant ==0){
             Array.from(document.getElementsByClassName('cell')).forEach(element =>{
                 element.addEventListener("click", 
-                 function() {
+                
+                function() {
+                    console.log(element);
                     if(strike(player1, element.dataset.x, element.dataset.y, element) == false){
                         Array.from(document.getElementsByClassName('cell')).forEach(element =>{
                             element.outerHTML = element.outerHTML; 
+    
                         })
-                        determinant++;
-                        continue;
+                        gameLoop(determinant);
                     } else {
-                        console.log('the game is over')
-                        isGameOver= true;
-                        
+                        alert('Congratulations! You won the game!')
                     }
-                    
-                    
                 }) 
             })
+            determinant++;
         } else {
-            cpu.makeAttack(0,0);
-            //i think i may need to modify the makeattack method somewhat
+            let a = Math.floor(Math.random() * 10 +1);
+            let b = Math.floor(Math.random() * 10 +1);
+            let board = document.getElementById('player');
+            console.log(`${a} ${b}`)
+            Array.from(document.getElementsByClassName('cell')).forEach(element => {
+                if(element.dataset.x == a && element.dataset.y == b 
+                        && element.parentElement.id == 'player'){
+                    update(element)
+                }
+            })
+            cpu.makeAttack(a,b);
             determinant--;
-            continue;
-        }
-        // i think we could do this with recursion instead
-   
-    
-   } 
-    
-  
+            gameLoop(determinant)
+        } 
 
+   } 
+   gameLoop(0);
 }
 
 gameLogic();

@@ -2,52 +2,46 @@
 
 function displayGameBoards(playerBoard, computerBoard){
     let content = document.getElementById("content");
-    content.style.width= "520px"
-    let playerSection = document.createElement('DIV');
-    let computerSection = document.createElement('DIV');
+    content.style.display ='grid';
+    content.style.justifyContent ='center';
     
-    playerSection.style.display= "none";
+    let playerSection = document.createElement('DIV');
+    playerSection.setAttribute('id', 'player');
+    playerSection.style.width= '520px';
+    let computerSection = document.createElement('DIV');
+    computerSection.setAttribute('id', 'computer');
+    computerSection.style.width= '520px';
+    playerSection.style.display= "grid";
     playerSection.style.gridTemplateColumns= "auto auto auto auto auto auto auto auto auto auto "
 
-    computerSection.style.marginTop= "10px";
+    playerSection.style.marginTop= "10px";
     computerSection.style.display= "grid";
     computerSection.style.gridTemplateColumns= "auto auto auto auto auto auto auto auto auto auto "
 
 
-    
 
-
-
-
-    playerBoard.forEach(element => {     
-        element.forEach(e => {
-            //we could use divs inside divs to create the shapes that we'd want to represent our battleships 
-            let cell = document.createElement("DIV");
-            cell.setAttribute("class", "cell");
-            cell.style.width = "50px";
-            cell.style.height = "50px";
-            sortingCells(e, cell)
-            cell.style.border = "solid 1px grey";
-            playerSection.appendChild(cell)
-        })
-    });
-
-    for(let a=0; a<10; a++){
-        for(let b=0; b<10; b++){
-            let cell = document.createElement("DIV");
-            cell.setAttribute("class", "cell");
-            cell.style.width = "50px";
-            cell.style.height = "50px";
-            sortingCells(computerBoard[a][b], cell)
-            cell.style.border = "solid 1px grey";
-            cell.value = computerBoard[a][b];
-            cell.dataset.x= a;
-            cell.dataset.y= b;   
-            computerSection.appendChild(cell)
+    function boardCreator(node, board){
+        for(let a=0; a<10; a++){
+            for(let b=0; b<10; b++){
+                let cell = document.createElement("DIV");
+                cell.setAttribute("class", "cell");
+                cell.style.width = "50px";
+                cell.style.height = "50px";
+                sortingCells(board[a][b], cell)
+                cell.style.border = "solid 1px grey";
+                cell.value = board[a][b];
+                cell.dataset.x= a;
+                cell.dataset.y= b;   
+                node.appendChild(cell)
+            }
         }
     }
-    content.appendChild(playerSection);
+
+    boardCreator(playerSection, playerBoard)
+    boardCreator(computerSection, computerBoard)
+
     content.appendChild(computerSection);
+    content.appendChild(playerSection);
 
 
 
@@ -73,12 +67,8 @@ function sortingCells(array, cell){
 }
 
 
-
-
-
 function update(cell){
     if(cell.value[1] === 'Hit'){
-        cell.style.backgroundColor = 'black';
         let img= document.createElement('img');
         img.style.height='50px';
         img.style.width ='50px';
